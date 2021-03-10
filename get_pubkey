@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+require 'open-uri'
+
+def usage
+  puts "#{File.basename($PROGRAM_NAME)} version 2021-03-02"
+  puts "usage: #{File.basename($PROGRAM_NAME)}  <username> <keyserver1> [keyserver2] [keyserverN]"
+end
+
+def get_keys(server, username, hostname)
+  all_keys = []
+  urls = [
+    "http://" + server + "/" + hostname + "/" + username + "/keys.txt",
+    "http://" + server + "/" + "globaluser" + "/" + username + "/keys.txt",
+  ]
+
+  urls.each { |url|
+    begin
+      keys = open(url).read
+    rescue StandardError => e
+      $stderr.puts "#{url}: #{e.message}"
+    else
+      all_keys << "# key(s) from #{url}\n#{keys}"
+    end
+  }
+
+  return all_keys
+end
+
+if ARGV.length < 2
+  usage()
+  exit(false)
+end
+
+# read args
+username = ARGV.shift
+keyservers = ARGV
+
+# get hostname
+hostname = `hostname -f`.strip()
+
+#print debug info
+$stderr.puts "username: #{username}"
+$stderr.puts "hostname: #{hostname}"
+keyservers.each { |s| $stderr.puts "keyserver: #{s}" }
+
+keys = []
+
+# loop through keyservers
+keyservers.each { |s| keys << get_keys(s, username, hostname) }
+
+# output keys, one per line
+keys.flatten!
+keys.each { |k|  puts; puts k }
+puts
