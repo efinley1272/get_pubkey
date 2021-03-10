@@ -2,9 +2,10 @@
 
 require 'open-uri'
 
-def usage
-  puts "#{File.basename($PROGRAM_NAME)} version 2021-03-02"
-  puts "usage: #{File.basename($PROGRAM_NAME)}  <username> <keyserver1> [keyserver2] [keyserverN]"
+def usage(hostname)
+  $stderr.puts "#{File.basename($PROGRAM_NAME)} version 2021-03-09"
+  $stderr.puts "hostname: #{hostname}"
+  $stderr.puts "usage: #{File.basename($PROGRAM_NAME)}  <username> <keyserver1> [keyserver2] [keyserverN]"
 end
 
 def get_keys(server, username, hostname)
@@ -27,17 +28,17 @@ def get_keys(server, username, hostname)
   return all_keys
 end
 
+# get hostname
+hostname = `hostname -f`.strip()
+
 if ARGV.length < 2
-  usage()
+  usage(hostname)
   exit(false)
 end
 
 # read args
 username = ARGV.shift
 keyservers = ARGV
-
-# get hostname
-hostname = `hostname -f`.strip()
 
 #print debug info
 $stderr.puts "username: #{username}"
