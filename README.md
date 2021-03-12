@@ -7,6 +7,15 @@ yum install -y ruby
 cp get_pubkey /usr/local/sbin/
 chown root:root /usr/local/sbin/get_pubkey
 chmod 755 /usr/local/sbin/get_pubkey
+
+
+#add or modify the following lines in /etc/ssh/sshd_config to match
+PermitRootLogin prohibit-password
+AuthorizedKeysFile      .ssh/authorized_keys.
+AuthorizedKeysCommand /usr/local/sbin/get_pubkey %u keyserver1.veracitynetworks.com keyserver2.veracitynetworks.com keyserver3.veracitynetworks.net
+AuthorizedKeysCommandUser nobody
+
+
 systemctl restart sshd
 
 #on centos
